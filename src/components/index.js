@@ -1,5 +1,7 @@
+'use strict'
+
 import { initialCards } from './cards.js'
-import { removeCard, handleLikeClick } from './card.js'
+import { handleLikeClick, createCard } from './card.js'
 import { openModal, closeModal, closeModalOnOverlay } from './modal.js'
 
 import '../pages/index.css'
@@ -18,27 +20,6 @@ const profileDescription = document.querySelector('.profile__description')
 
 const placesList = document.querySelector('.places__list')
 
-function createCard(item, handleCardClick, handleLikeClick) {
-    const content = document.querySelector('#card-template').content
-    const card = content.querySelector('.card').cloneNode(true)
-    const cardImg = card.querySelector('.card__image')
-    const cardTitle = card.querySelector('.card__title')
-    const cardLike = card.querySelector('.card__like-button')
-    const btnDelete = card.querySelector('.card__delete-button')
-
-    cardImg.src = item.link
-    cardImg.alt = item.name
-    cardTitle.textContent = item.name
-
-    cardImg.addEventListener('click', () => handleCardClick(item))
-    btnDelete.addEventListener('click', removeCard)
-    cardLike.addEventListener('click', (evt) => {
-      handleLikeClick(evt.target); 
-    });
-
-    return card
-}
-
 function handleCardClick(item) {
     const popupImage = document.querySelector('.popup_type_image')
     const popupImageElement = popupImage.querySelector('.popup__image')
@@ -51,9 +32,8 @@ function handleCardClick(item) {
     openModal(popupImage)
 }
 
-function handleSubmitForm(evt) {
-    evt.preventDefault()
-    closeModal(evt.target.closest('.popup'))
+function handleSubmitForm(popup) {
+    closeModal(popup);
 }
 
 editBtn.addEventListener('click', () => {
@@ -66,12 +46,17 @@ addBtn.addEventListener('click', () => {
     openModal(popupTypeNewCard)
 })
 
-editForm.addEventListener('submit', (evt) => {
-    profileTitle.textContent = editForm.name.value
-    profileDescription.textContent = editForm.description.value
+function updateProfileInfo({ name, description }) {
+  profileTitle.textContent = name;
+  profileDescription.textContent = description;
+}
 
-    handleSubmitForm(evt)
-})
+editForm.addEventListener('submit', (evt) => {
+  evt.preventDefault();
+  const { name, description } = editForm.elements;
+  updateProfileInfo({ name: name.value, description: description.value });
+  handleSubmitForm(popupTypeEdit);
+});
 
 newPlaceForm.addEventListener('submit', (evt) => {
     evt.preventDefault()
@@ -82,11 +67,12 @@ newPlaceForm.addEventListener('submit', (evt) => {
             link: newPlaceForm.elements.link.value,
         },
         handleCardClick,
-        handleLikeClick,
+        handleLikeClick
     )
     placesList.prepend(newCard)
 
     closeModal(popupTypeNewCard)
+    newPlaceForm.reset()
 })
 
 initialCards.forEach((item) => {
@@ -103,17 +89,16 @@ document.querySelectorAll('.popup__close').forEach((closeButton) => {
 
 // Устанавливаем обработчик для закрытия попапа по клику на оверлей
 document.querySelectorAll('.popup').forEach((popup) => {
-    popup.addEventListener('click', closeModalOnOverlay)
-})
-document.querySelectorAll('.button_open-popup').forEach((button) => {
-    button.addEventListener('click', function () {
-        const popup = document.querySelector(button.getAttribute('data-popup'))
-        openModal(popup)
-
-        // Если в попапе есть форма, то сбрасываем её содержимое
-        const form = popup.querySelector('.popup__form')
-        if (form) {
-            form.reset()
+    popup.addEventListener('click', (evt) => {
+        if (evt.target === evt.currentTarget) {
+            closeModalOnOverlay(evt)
         }
     })
 })
+
+document.addEventListener('click', (evt) => {
+  if(evt.target.classList.contains('popup__close') || evt.target.classList.contains('popup')) {
+      const popup = evt.target.classList.contains('popup') ? evt.target : evt.target.closest('.popup');
+      closeModal(popup);
+  }
+});
