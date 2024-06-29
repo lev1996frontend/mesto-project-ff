@@ -1,7 +1,7 @@
 'use strict'
 
 import { initialCards } from './cards.js'
-import { handleLikeClick, createCard } from './card.js'
+import { handleLikeClick, createCard} from './card.js'
 import { openModal, closeModal, closeModalOnOverlay } from './modal.js'
 
 import '../pages/index.css'
@@ -32,9 +32,6 @@ function handleCardClick(item) {
     openModal(popupImage)
 }
 
-function handleSubmitForm(popup) {
-    closeModal(popup);
-}
 
 editBtn.addEventListener('click', () => {
     openModal(popupTypeEdit)
@@ -55,7 +52,7 @@ editForm.addEventListener('submit', (evt) => {
   evt.preventDefault();
   const { name, description } = editForm.elements;
   updateProfileInfo({ name: name.value, description: description.value });
-  handleSubmitForm(popupTypeEdit);
+  closeModal(popupTypeEdit);
 });
 
 newPlaceForm.addEventListener('submit', (evt) => {
@@ -78,13 +75,6 @@ newPlaceForm.addEventListener('submit', (evt) => {
 initialCards.forEach((item) => {
     const newCard = createCard(item, handleCardClick, handleLikeClick)
     placesList.append(newCard)
-})
-
-document.querySelectorAll('.popup__close').forEach((closeButton) => {
-    closeButton.addEventListener('click', function () {
-        const popup = this.closest('.popup')
-        closeModal(popup)
-    })
 })
 
 // Устанавливаем обработчик для закрытия попапа по клику на оверлей

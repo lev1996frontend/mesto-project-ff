@@ -49,5 +49,3 @@ export const initialCards = [
         link: baikal,
     },
 ]
-
-export { arkhyz, baikal, chelyabinsk, ivanovo, kamchatka, kholmogorsky}
