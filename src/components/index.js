@@ -1,7 +1,7 @@
 'use strict'
 
 import { initialCards } from './cards.js'
-import { handleLikeClick, createCard} from './card.js'
+import { handleLikeClick, createCard, handleRemoveClick } from './card.js'
 import { openModal, closeModal, closeModalOnOverlay } from './modal.js'
 
 import '../pages/index.css'
@@ -90,5 +90,11 @@ document.addEventListener('click', (evt) => {
   if(evt.target.classList.contains('popup__close') || evt.target.classList.contains('popup')) {
       const popup = evt.target.classList.contains('popup') ? evt.target : evt.target.closest('.popup');
       closeModal(popup);
+  }
+});
+
+placesList.addEventListener('click', (evt) => {
+  if (evt.target.classList.contains('card__delete-button')) {
+    handleRemoveClick(evt);
   }
 });
