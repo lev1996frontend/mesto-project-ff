@@ -1,24 +1,31 @@
-const openModal = (element) => {
-  element.classList.add("popup_is-opened");
-  document.addEventListener("keydown", closeModalOnEscape);
-};
+function toggleEscEventHandler(action) {
+    if (action === 'add') {
+        document.addEventListener('keydown', closeModalOnEsc)
+        document.addEventListener('mousedown', closeModalOnOverlayClick)
+    } else if (action === 'remove') {
+        document.removeEventListener('keydown', closeModalOnEsc)
+        document.removeEventListener('mousedown', closeModalOnOverlayClick)
+    }
+}
 
-const closeModal = (element) => {
-  element.classList.remove("popup_is-opened");
-  document.removeEventListener("keydown", closeModalOnEscape);
-};
+function closeModalOnOverlayClick(event) {
+    if (event.target.classList.contains('popup_is-opened'))
+        closeModal(event.target)
+}
 
-const closeModalOnEscape = (evt) => {
-  if (evt.key === "Escape") {
-    const currentPopup = document.querySelector(".popup_is-opened");
-    closeModal(currentPopup);
-  }
-};
+function closeModalOnEsc(event) {
+    if (event.key === 'Escape')
+        closeModal(document.querySelector('.popup_is-opened'))
+}
 
-const closeModalOnOverlay = (evt) => {
-  if (evt.target === evt.currentTarget) {
-    closeModal(evt.currentTarget);
-  }
-};
+export function openModal(popup) {
+    popup.classList.add('popup_is-opened')
+    popup.classList.remove('popup_is-animated')
+    toggleEscEventHandler('add')
+}
 
-export { openModal, closeModal, closeModalOnOverlay };
+export function closeModal(popup) {
+    popup.classList.remove('popup_is-opened')
+    popup.classList.add('popup_is-animated')
+    toggleEscEventHandler('remove')
+}
