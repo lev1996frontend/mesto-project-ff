@@ -30,7 +30,7 @@ const avatarEditButton = document.querySelector(".profile__image-container");
 const popupConfirm = document.querySelector(".popup_type_confirm");
 const popupConfirmButton = popupConfirm.querySelector(".popup__button");
 
-
+//селекторы для форм, полей ввода и кнопок, а также классы для стилизации ошибок
 const validationConfig = {
   formSelector: ".popup__form",
   inputSelector: ".popup__input",
@@ -41,30 +41,40 @@ const validationConfig = {
 };
 let userId;
 
-
+//Изменяет текст кнопки в зависимости от состояния загрузки
 const renderLoading = (isLoading, button) => {
   button.textContent = isLoading ? "Сохранение..." : "Сохранить";
 };
-
+//Заполняет информацию профиля (имя, описание, аватар).
 const fillProfileInfo = (userInfo) => {
   profileTitle.textContent = userInfo.name;
   profileDescription.textContent = userInfo.about;
   profileAvatar.style.backgroundImage = `url(${userInfo.avatar})`;
 };
 
+//Подготавливает форму редактирования профиля, выставляя в нее имеющиеся значения.
+const fillProfilePopup = (form, name, description) => {
+  form.elements.name.value = name;
+  form.elements.description.value = description;
+};
+popupImageElement.addEventListener("click", (evt) => {
+  closeModalOnOverlay(evt);
+});
+
+//Отображает исходные карточки на странице.
 const renderInitialCards = (initialCards, userId) => {
   initialCards.forEach((card) => {
     renderCard(card, userId, placesList, likeCard, deleteCard, openImagePopup);
   });
 };
-
+// Открывает модальное окно с изображением
 const openImagePopup = (imageURL, imageAlt, title) => {
   popupImage.src = imageURL;
   popupImage.alt = imageAlt;
   popupCaption.textContent = title;
   openModal(popupImageElement);
 };
-
+//Подтверждает удаление карточки после запроса к серверу
 const handleConfirmDelete = async (evt) => {
   deleteCardFromServer(popupConfirm.dataset.cardId)
     .then((result) => {
@@ -78,7 +88,7 @@ const handleConfirmDelete = async (evt) => {
       console.log(err);
     });
 };
-
+//Обрабатывает отправку формы редактирования профиля и обновляет информацию
 const handleProfileFormSubmit = async (evt) => {
   evt.preventDefault();
   renderLoading(true, popupProfileForm.querySelector(".popup__button"));
@@ -98,7 +108,7 @@ const handleProfileFormSubmit = async (evt) => {
       renderLoading(false, popupProfileForm.querySelector(".popup__button"));
     });
 };
-
+//Обрабатывает отправку формы для изменения аватара.
 const handleAvatarFormSubmit = async (evt) => {
   evt.preventDefault();
   renderLoading(true, popupAvatarForm.querySelector(".popup__button"));
@@ -115,7 +125,7 @@ const handleAvatarFormSubmit = async (evt) => {
       renderLoading(false, popupAvatarForm.querySelector(".popup__button"));
     });
 };
-
+//Обрабатывает отправку формы для добавления новой карточки
 const handleNewCardFormSubmit = async (evt) => {
   evt.preventDefault();
   renderLoading(true, popupNewCardForm.querySelector(".popup__button"));
@@ -144,15 +154,8 @@ const handleNewCardFormSubmit = async (evt) => {
     });
 };
 
-const fillProfilePopup = (form, name, description) => {
-  form.elements.name.value = name;
-  form.elements.description.value = description;
-};
-popupImageElement.addEventListener("click", (evt) => {
-  closeModalOnOverlay(evt);
-});
 
-//profile popup
+//
 profileEditButton.addEventListener("click", () => {
   clearValidation(popupProfileForm, validationConfig);
   fillProfilePopup(
@@ -162,54 +165,54 @@ profileEditButton.addEventListener("click", () => {
   );
   openModal(popupProfile);
 });
-
+// Обрабатывает отправку формы профиля, вызывая функцию handleProfileFormSubmit для обработки данных, введённых пользователем
 popupProfileForm.addEventListener("submit", handleProfileFormSubmit);
-
+//  Закрытие модального окна профиля
 popupProfile.addEventListener("click", (evt) => {
   closeModalOnOverlay(evt);
 });
 
-// edit avatar popup
+//Очистит валидацию формы аватара, сбросит её данные и откроет модальное окно для редактирования аватара
 avatarEditButton.addEventListener("click", (evt) => {
   clearValidation(popupAvatarForm, validationConfig);
   popupAvatarForm.reset();
   openModal(popupAvatar);
 });
-
+//Обрабатывает отправку формы изменения аватара, вызывая функцию
 popupAvatarForm.addEventListener("submit", handleAvatarFormSubmit);
-
+//Закрывает окно изменения аватара при клике на оверлей.
 popupAvatar.addEventListener("click", (evt) => {
   closeModalOnOverlay(evt);
 });
 
-// add card popup
+// Очищает и открывает форму для создания новой карточки, обеспечивая валидацию
 newCardButton.addEventListener("click", () => {
   popupNewCardForm.reset();
   clearValidation(popupNewCardForm, validationConfig);
   openModal(popupNewCard);
 });
-
+//Закрывает окно добавления новой карточки при клике на оверлей.
 popupNewCardForm.addEventListener("submit", handleNewCardFormSubmit);
-
+// Закрывает окно подтверждения удаления карточки при клике на оверлей
 popupNewCard.addEventListener("click", (evt) => {
   closeModalOnOverlay(evt);
 });
 
-// confirm delete popup
+// Обрабатывает удаление карточки при нажатии кнопки подтверждения
 popupConfirm.addEventListener("click", (evt) => {
   closeModalOnOverlay(evt);
 });
 
 popupConfirmButton.addEventListener("click", handleConfirmDelete);
 
-// popup close button
+// Обработка закрытия модального окна
 document.addEventListener("click", (evt) => {
   if (evt.target.classList.contains("popup__close")) {
     closeModal(evt.target.parentNode.parentNode);
   }
 });
 
-// initialization
+//  Асинхронно получает начальную информацию о пользователе и карточках
 getInitialInfo()
   .then((result) => {
     const userInfo = result[0];

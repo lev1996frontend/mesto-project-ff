@@ -5,7 +5,7 @@ import { openModal } from "./modal";
 const cardTemplate = document.querySelector("#card-template").content;
 const popupConfirm = document.querySelector(".popup_type_confirm");
 
-// переделал функции, упростил их через const
+// переделал функции, упростил их через функциональное выражение
 const likeCard = async (evt, cardId) => {
   let currentLikes = evt.target.parentNode.querySelector(".card__like-count");
 
@@ -35,7 +35,7 @@ const deleteCard = (evt, cardId) => {
   popupConfirm.dataset.cardId = cardId;
 };
 
-
+// создание карточек
 const createCard = (
   card,
   userId,
@@ -50,21 +50,21 @@ const createCard = (
   const cardTitle = cardElement.querySelector(".card__title");
   const cardLikeCount = cardElement.querySelector(".card__like-count");
 
-  // использую id для удаления карточки, напрямую не понимаю как передать
+  // использую id для удаления карточки, напрямую не понимаю как передать, старый вариант удалил
   cardElement.dataset.cardId = card._id;
   cardElement.dataset.ownerId = card.owner._id;
   cardImage.src = card.link;
   cardImage.alt = card.description;
   cardTitle.textContent = card.name;
 
-  // render likes
+  // рендер лайков
   cardLikeCount.textContent = card.likes.length;
   const isLiked = card.likes.some((like) => like._id === userId);
   if (isLiked) {
     cardLikeButton.classList.add("card__like-button_is-active");
   }
 
-  // delete card
+  // удаление карточек
   if (card.owner._id === userId) {
     cardDeleteButton.addEventListener("click", (evt) => {
       deleteCardFn(evt, card._id);
@@ -73,19 +73,19 @@ const createCard = (
     cardDeleteButton.remove();
   }
 
-  // like card
+  // лайк карточки
   cardLikeButton.addEventListener("click", (evt) => {
     likeCardFn(evt, card._id);
   });
 
-  // image popup
+  // картинка попапа
   cardImage.addEventListener("click", () => {
     openFullImageFn(cardImage.src, cardImage.alt, cardTitle.textContent);
   });
 
   return cardElement;
 };
-
+// рендеринг
 const renderCard = (
   item,
   userId,
