@@ -4,21 +4,20 @@
 @import url('./__info/profile__info.css');
 @import url('./__title/profile__title.css');
 @import url('./__image/profile__image.css');
-@import url('./__id/profile__id.css');
-
+@import url('./__image-container/profile__image-container.css');
 
 .profile {
-  font-family: 'Inter', Arial, sans-serif;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  padding: 36px 0;
+    font-family: 'Inter', Arial, sans-serif;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    padding: 36px 0;
 }
 
 @media screen and (max-width: 480px) {
-  .profile {
-    padding: 43px 0;
-    flex-direction: column;
-    text-align: center;
-  }
+    .profile {
+        padding: 43px 0;
+        flex-direction: column;
+        text-align: center;
+    }
 }
