@@ -1,5 +1,5 @@
 import "../pages/index.css";
-import { renderCard, likeCard, deleteCard } from "./card";
+import {  likeCard, createCard } from "./card";
 import { closeModal, openModal, closeModalOnOverlay } from "./modal";
 import { clearValidation, enableValidation } from "./validation";
 import {
@@ -40,6 +40,37 @@ const validationConfig = {
   errorClass: "popup__error_visible",
 };
 let userId;
+
+//удаление карточек
+const deleteCard = (evt, cardId) => {
+  openModal(popupConfirm);
+  popupConfirm.dataset.cardId = cardId;
+};
+
+
+// рендеринг
+const renderCard = (
+  item,
+  userId,
+  container,
+  likeCard,
+  deleteCard,
+  openFullImageFn,
+  place = "end",
+) => {
+  const cardElement = createCard(
+    item,
+    userId,
+    deleteCard,
+    likeCard,
+    openFullImageFn,
+  );
+  if (place === "end") {
+    container.append(cardElement);
+  } else {
+    container.prepend(cardElement);
+  }
+};
 
 //Изменяет текст кнопки в зависимости от состояния загрузки
 const renderLoading = (isLoading, button) => {
@@ -144,7 +175,6 @@ const handleNewCardFormSubmit = async (evt) => {
       );
       closeModal(popupNewCard);
       popupNewCardForm.reset();
-      clearValidation(popupNewCardForm, validationConfig);
     })
     .catch((err) => {
       console.log(err);
@@ -206,12 +236,12 @@ popupConfirm.addEventListener("click", (evt) => {
 popupConfirmButton.addEventListener("click", handleConfirmDelete);
 
 // Обработка закрытия модального окна
-document.addEventListener("click", (evt) => {
-  if (evt.target.classList.contains("popup__close")) {
-    closeModal(evt.target.parentNode.parentNode);
-  }
+const popupCloseButtons = document.querySelectorAll(".popup__close");
+popupCloseButtons.forEach((button) => {
+    button.addEventListener("click", (evt) => {
+        closeModal(evt.target.closest(".popup")); // Закрываем попап, связанный с кнопкой закрытия
+    });
 });
-
 //  Асинхронно получает начальную информацию о пользователе и карточках
 getInitialInfo()
   .then((result) => {

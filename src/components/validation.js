@@ -1,13 +1,10 @@
 // функции работы с валидацией, переделал согласно чек-листу
-// функция инициализирует процесс валидации всех форм на
+// функция инициализирует процесс валидации всех форм
 const enableValidation = (validationConfig) => {
     const formList = Array.from(
         document.querySelectorAll(validationConfig.formSelector)
     )
     formList.forEach((formElement) => {
-        formElement.addEventListener('submit', (evt) => {
-            evt.preventDefault()
-        })
         setEventListeners(
             formElement,
             validationConfig.inputSelector,
