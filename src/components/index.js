@@ -3,7 +3,6 @@ import { likeCard, createCard } from './card'
 import { closeModal, openModal, closeModalOnOverlay } from './modal'
 import { clearValidation, enableValidation } from './validation'
 import {
-    getInitialCards,
     getInitialInfo,
     postNewCard,
     updateUserAvatar,
