@@ -105,27 +105,27 @@ const toggleButtonState = (inputList, buttonElement, inactiveButtonClass) => {
       buttonElement.disabled = false
   }
 }
-//Очищает валидацию для формы, скрывая все ошибки и сбрасывая состояние поля ввода
+// Очищает валидацию для формы, скрывая все ошибки и сбрасывая состояние поля ввода
 const clearValidation = (formElement, validationConfig) => {
   const inputList = Array.from(
-      formElement.querySelectorAll(validationConfig.inputSelector)
+    formElement.querySelectorAll(validationConfig.inputSelector)
   );
-  const buttonElement = formElement.querySelector(
-      validationConfig.submitButtonSelector
-  );
-  buttonElement.classList.add(validationConfig.inactiveButtonClass);
-  buttonElement.disabled = true; // Добавляем отключение кнопки отправки
 
+  // Очищаем поля ввода от ошибок
   inputList.forEach((inputElement) => {
-      hideInputError(
-          formElement,
-          inputElement,
-          validationConfig.inputErrorClass,
-          validationConfig.errorClass
-      );
-      inputElement.setCustomValidity('');
+    inputElement.classList.remove(validationConfig.inputErrorClass);
+    const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
+    errorElement.textContent = '';
   });
-};
+
+  const buttonElement = formElement.querySelector(
+    validationConfig.submitButtonSelector
+  );
+
+  // Используем toggleButtonState для управления состоянием кнопки
+  toggleButtonState(inputList, buttonElement, validationConfig.inactiveButtonClass);
+}
+
 
 
 export { enableValidation, clearValidation }

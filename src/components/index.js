@@ -40,12 +40,13 @@ const validationConfig = {
 }
 let userId
 let cardToDelete = null
+let cardIdToDelete = null
 
 //удаление карточек
 const deleteCard = (evt, cardId) => {
   cardToDelete = evt.target.closest('.card');
+  cardIdToDelete = cardId
   openModal(popupConfirm);
-  popupConfirm.dataset.cardId = cardId;
 }
 
 // рендеринг
@@ -114,12 +115,12 @@ const openImagePopup = (imageData) => {
 }
 //Подтверждает удаление карточки после запроса к серверу
 const handleConfirmDelete = (evt) => {
-  const cardId = popupConfirm.dataset.cardId;
-  deleteCardFromServer(cardId)
+  deleteCardFromServer(cardIdToDelete)
       .then((result) => {
           if (cardToDelete) {
               cardToDelete.remove();
               cardToDelete = null;
+              cardIdToDelete = null;
           }
           closeModal(popupConfirm);
       })
@@ -202,14 +203,14 @@ const handleNewCardFormSubmit = (evt) => {
 };
 
 profileEditButton.addEventListener('click', () => {
-    clearValidation(popupProfileForm, validationConfig)
-    fillProfilePopup(
-        popupProfileForm,
-        profileTitle.textContent,
-        profileDescription.textContent
-    )
-    openModal(popupProfile)
-})
+  fillProfilePopup(
+      popupProfileForm,
+      profileTitle.textContent,
+      profileDescription.textContent
+  );
+  clearValidation(popupProfileForm, validationConfig);
+  openModal(popupProfile);
+});
 // Обрабатывает отправку формы профиля, вызывая функцию handleProfileFormSubmit для обработки данных, введённых пользователем
 popupProfileForm.addEventListener('submit', handleProfileFormSubmit)
 //  Закрытие модального окна профиля

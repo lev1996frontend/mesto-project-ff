@@ -1,28 +1,24 @@
 import { deleteLike, putLike } from './api'
 
-//селекторы, вынес для наименьшего запроса к дом
+// Селекторы, вынес для минимизации запросов к DOM
 const cardTemplate = document.querySelector('#card-template').content
 
-// переделал функции, упростил их через функциональное выражение
-const likeCard = (evt, cardId) => {
-    const currentLikes = evt.target
-        .closest('.card')
-        .querySelector('.card__like-count')
-
-    if (evt.target.classList.contains('card__like-button_is-active')) {
+// Функция для обработки лайков, упрощена через функциональное выражение
+const likeCard = (likeButton, likeCountElement, cardId) => {
+    if (likeButton.classList.contains('card__like-button_is-active')) {
         deleteLike(cardId)
-            .then((updatedCard) => {
-                evt.target.classList.remove('card__like-button_is-active')
-                currentLikes.textContent = updatedCard.likes.length
+            .then((res) => {
+                likeButton.classList.remove('card__like-button_is-active')
+                likeCountElement.textContent = res.likes.length
             })
             .catch((err) => {
                 console.log(err)
             })
     } else {
         putLike(cardId)
-            .then((updatedCard) => {
-                evt.target.classList.add('card__like-button_is-active')
-                currentLikes.textContent = updatedCard.likes.length
+            .then((res) => {
+                likeButton.classList.add('card__like-button_is-active')
+                likeCountElement.textContent = res.likes.length
             })
             .catch((err) => {
                 console.log(err)
@@ -30,12 +26,12 @@ const likeCard = (evt, cardId) => {
     }
 }
 
-// создание карточек
+// Создание карточек
 export const createCard = (
     cardData,
     userId,
     deleteCardFn,
-    likeCardFn,
+    likeCard,
     openFullImageFn
 ) => {
     const cardElement = cardTemplate.querySelector('.card').cloneNode(true)
@@ -45,19 +41,19 @@ export const createCard = (
     const cardTitle = cardElement.querySelector('.card__title')
     const cardLikeCount = cardElement.querySelector('.card__like-count')
 
-    // использую id для удаления карточки, напрямую не понимаю как передать, старый вариант удалил
+    // Установка данных карточки
     cardImage.src = cardData.link
     cardImage.alt = cardData.name
     cardTitle.textContent = cardData.name
 
-    // рендер лайков
+    // Рендер лайков
     cardLikeCount.textContent = cardData.likes.length
     const isLiked = cardData.likes.some((like) => like._id === userId)
     if (isLiked) {
         cardLikeButton.classList.add('card__like-button_is-active')
     }
 
-    // удаление карточек
+    // Удаление карточек
     if (cardData.owner._id === userId) {
         cardDeleteButton.addEventListener('click', (evt) => {
             deleteCardFn(evt, cardData._id)
@@ -66,12 +62,12 @@ export const createCard = (
         cardDeleteButton.remove()
     }
 
-    // лайк карточки
-    cardLikeButton.addEventListener('click', (evt) => {
-        likeCardFn(evt, cardData._id)
-    })
+    // Лайк карточки
+    cardLikeButton.addEventListener('click', () =>
+        likeCard(cardLikeButton, cardLikeCount, cardData._id)
+    )
 
-    // картинка попапа
+    // Попап с картинкой
     cardImage.addEventListener('click', () => {
         openFullImageFn({
             src: cardData.link,
